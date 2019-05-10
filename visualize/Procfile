@@ -1,1 +1,1 @@
-web: gunicorn dash_app:server
+web: gunicorn dash_app:server --workers 1 --threads 1

@@ -11,6 +11,8 @@ from dash.dependencies import Input, Output
 
 
 S3_addr = 'https://s3.us-east-2.amazonaws.com/n0lean-bucket/flower/'
+REFOCUS_S3_ADDR = 'https://s3.amazonaws.com/photorefocus/'
+refocus_img_list = [REFOCUS_S3_ADDR + str(i) + '.png' for i in range(100)]
 external_stylesheets = [
     'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css',
     'https://codepen.io/chriddyp/pen/bWLwgP.css',
@@ -22,7 +24,6 @@ with open('./eval_resultrefocus_final_4_index.json', 'r') as f:
 
 index = [[S3_addr + t for t in tri] for tri in index]
 focusstack = collections.defaultdict(dict)
-
 for ind in index:
     d = ind[0].split('/')[-1].split('_')[0]
     name = ind[0].split('/')[-1].split('.')[0].split('_')[-1]
@@ -31,8 +32,8 @@ for ind in index:
 
 focusstack = [val for key, val in focusstack.items()]
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 # heroku server
 server = app.server
 
@@ -42,6 +43,11 @@ img_height = 256
 scale_factor = 1.3
 gcounter = 0
 slider1_loc = 1
+slider0_loc = 0
+slider2_loc = 1
+
+fig2_links = ['test_raw.jpg', 'test_res_0.jpg', 'test_res_1.jpg', 'test_res_2.jpg', 'test_res_3.jpg']
+fig2_links = [S3_addr + k for k in fig2_links]
 
 latest_left = {
     'xaxis.range[0]': 0,
@@ -66,9 +72,45 @@ latest_right = {
     'yaxis.range[1]': img_height,
 }
 
+latest_left0 = {
+    'xaxis.range[0]': 0,
+    'xaxis.range[1]': img_width,
+    'yaxis.range[0]': 0,
+    'yaxis.range[1]': img_height,
+}
+
 
 def get_random_image():
     return random.choice(focusstack)
+
+
+fig0 = go.Layout(
+    title="Refocus using light field",
+    xaxis=go.layout.XAxis(
+        visible=False,
+        range=[0, img_width]),
+    yaxis=go.layout.YAxis(
+        visible=False,
+        range=[0, img_height],
+        scaleanchor='x'),
+    width=img_width * scale_factor,
+    height=img_height * scale_factor,
+    margin={'l': 0, 'r': 0, 't': 30, 'b': 5},
+    images=[
+        go.layout.Image(
+            x=0,
+            sizex=img_width,
+            y=img_height,
+            sizey=img_height,
+            xref="x",
+            yref="y",
+            opacity=1.0,
+            layer="below",
+            sizing="stretch",
+            source=refocus_img_list[slider0_loc]
+        )
+    ]
+)
 
 
 fig1_stack = get_random_image()
@@ -157,9 +199,6 @@ fig1_right = go.Layout(
     ]
 )
 
-fig2_links = ['test_raw.jpg', 'test_res_0.jpg', 'test_res_1.jpg', 'test_res_2.jpg', 'test_res_3.jpg']
-fig2_links = [S3_addr + k for k in fig2_links]
-slider2_loc = 1
 
 fig2_left = go.Layout(
     title="Generated Sample",
@@ -272,6 +311,43 @@ app.layout = html.Div(
 
         html.Div([
             html.Br(),
+            html.Div([
+                html.Div(className="col-6 col-md-4"),
+                html.Div(
+                    dcc.Graph(
+                        id='fig0',
+                        figure=go.Figure(
+                            data=[{
+                                'x': [0, img_width],
+                                'y': [0, img_height],
+                                'mode': 'markers',
+                                'marker': {'opacity': 0},
+                            }],
+                            layout=fig0
+                        )
+                    ),
+                    className="col-6 col-md-4"
+                ),
+
+            ], className='row align-items-center'),
+        ]),
+
+        html.Br(),
+        html.Div(
+            dcc.Slider(
+                id='fig0_slider',
+                min=0,
+                max=99,
+                value=0,
+                marks={'0': 'near', '99': 'far'},
+            ),
+        ),
+        html.Br(),
+        html.Br(),
+
+
+        html.Div([
+            html.Br(),
             html.Button('Shuffle', id='fig1_button'),
             html.Br(),
             html.Br(),
@@ -326,7 +402,7 @@ app.layout = html.Div(
                     className="col-6 col-md-4"
                 )
                 ],
-                style={'columnCount': 2},
+                # style={'columnCount': 2},
                 className='row align-items-center'
             )
         ]),
@@ -399,7 +475,7 @@ app.layout = html.Div(
                         className="col-6 col-md-4"
                     )
                 ],
-                    style={'columnCount': 2},
+                    # style={'columnCount': 2},
                     className='row align-items-center'
                 )
             ]),
@@ -688,6 +764,69 @@ def random_fig1(left, right, slider):
             'layout': fig2_right,
         },
     ]
+
+
+@app.callback(
+    [
+        Output('fig0', 'figure'),
+    ],
+    [
+        Input('fig0', 'relayoutData'),
+        Input('fig0_slider', 'value')
+    ]
+)
+def refocus(left, slider):
+    global latest_left0, slider0_loc
+
+    if slider is not None and slider0_loc != slider:
+        slider0_loc = slider
+
+    if slider is None:
+        slider = slider0_loc
+
+    left = latest_left0 if left is None else left
+    if 'xaxis.autorange' in left:
+        now = {
+            'xaxis.range[0]': 0,
+            'xaxis.range[1]': img_width,
+            'yaxis.range[0]': 0,
+            'yaxis.range[1]': img_height,
+        }
+    else:
+        now = left
+
+    now = {key: int(val) for key, val in now.items()}
+    latest_left0 = copy.deepcopy(now)
+    slider0_loc = slider
+
+    fig0 = go.Layout(
+        title="Refocus using light field",
+        xaxis=go.layout.XAxis(
+            visible=False,
+            range=[now['xaxis.range[0]'], now['xaxis.range[1]']]),
+        yaxis=go.layout.YAxis(
+            visible=False,
+            range=[now['yaxis.range[0]'], now['yaxis.range[1]']],
+            scaleanchor='x'),
+        width=img_width * scale_factor,
+        height=img_height * scale_factor,
+        margin={'l': 0, 'r': 0, 't': 30, 'b': 5},
+        images=[
+            go.layout.Image(
+                x=0,
+                sizex=img_width,
+                y=img_height,
+                sizey=img_height,
+                xref="x",
+                yref="y",
+                opacity=1.0,
+                layer="below",
+                sizing="stretch",
+                source=refocus_img_list[slider0_loc]
+            )
+        ]
+    )
+    return [{'layout': fig0}]
 
 
 if __name__ == '__main__':
