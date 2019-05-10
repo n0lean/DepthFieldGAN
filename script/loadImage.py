@@ -5,8 +5,8 @@ from skimage import transform, io
 import tqdm
 from boto.s3.connection import S3Connection
 
-aws_s3_accessKey = "AKIA2IKMDTU4QDK7RR2B"
-aws_s3_secretKey = "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"
+aws_s3_accessKey = "******"
+aws_s3_secretKey = "******"
 
 save_path = '/Users/huxin/Desktop/adp/photo/focus/*.png'
 
