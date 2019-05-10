@@ -1,0 +1,3 @@
+dash==0.42.0
+dash-daq==0.1.0
+gunicorn==19.9.0

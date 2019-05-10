@@ -33,6 +33,9 @@ focusstack = [val for key, val in focusstack.items()]
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
+# heroku server
+server = app.server
+
 
 img_width = 256
 img_height = 256
@@ -688,4 +691,4 @@ def random_fig1(left, right, slider):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8888, host='0.0.0.0')
+    app.run_server()
