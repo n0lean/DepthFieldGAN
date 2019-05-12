@@ -16,6 +16,7 @@ following equation:
 
 Then we generated a series of near-focus and far-focus images, which is also called focus stack.
 
+<p class="text-center font-weight-bolder"> Focus Stack </p>
 We implemented above by following code:
 
 ----
