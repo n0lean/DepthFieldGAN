@@ -274,11 +274,21 @@ latest_right2 = {
 with open('./intro.md', 'r') as f:
     intro_str = f.read()
 
+with open('./background.md', 'r') as f:
+    background_str = f.read()
+
 with open('./method.md', 'r') as f:
     method_str = f.read()
 
+with open('./method2.md', 'r') as f:
+    method2_str = f.read()
+
 with open('./visualize.md', 'r') as f:
     vis_str = f.read()
+
+with open('./ref.md', 'r') as f:
+    ref_str = f.read()
+
 
 app.layout = html.Div(
     [
@@ -308,43 +318,6 @@ app.layout = html.Div(
                 dcc.Markdown(intro_str, dangerously_allow_html=True),
             )
         ]),
-
-        html.Div([
-            html.Br(),
-            html.Div([
-                html.Div(className="col-6 col-md-4"),
-                html.Div(
-                    dcc.Graph(
-                        id='fig0',
-                        figure=go.Figure(
-                            data=[{
-                                'x': [0, img_width],
-                                'y': [0, img_height],
-                                'mode': 'markers',
-                                'marker': {'opacity': 0},
-                            }],
-                            layout=fig0
-                        )
-                    ),
-                    className="col-6 col-md-4"
-                ),
-
-            ], className='row align-items-center'),
-        ]),
-
-        html.Br(),
-        html.Div(
-            dcc.Slider(
-                id='fig0_slider',
-                min=0,
-                max=99,
-                value=0,
-                marks={'0': 'near', '99': 'far'},
-            ),
-        ),
-        html.Br(),
-        html.Br(),
-
 
         html.Div([
             html.Br(),
@@ -427,6 +400,49 @@ app.layout = html.Div(
             )
         ]),
 
+        html.Div([
+            html.Br(),
+            html.Div([
+                html.Div(className="col-6 col-md-4"),
+                html.Div(
+                    dcc.Graph(
+                        id='fig0',
+                        figure=go.Figure(
+                            data=[{
+                                'x': [0, img_width],
+                                'y': [0, img_height],
+                                'mode': 'markers',
+                                'marker': {'opacity': 0},
+                            }],
+                            layout=fig0
+                        )
+                    ),
+                    className="col-6 col-md-4"
+                ),
+
+            ], className='row align-items-center'),
+        ]),
+
+        html.Br(),
+        html.Div(
+            dcc.Slider(
+                id='fig0_slider',
+                min=0,
+                max=99,
+                value=0,
+                marks={'0': 'near', '99': 'far'},
+            ),
+        ),
+        html.Br(),
+        html.Br(),
+
+        html.Div([
+            html.Div(
+                dcc.Markdown(method2_str, dangerously_allow_html=True)
+            )
+        ]),
+
+
         # Visualize
         html.Div([
             html.Div([
@@ -494,7 +510,14 @@ app.layout = html.Div(
             html.Br(),
 
 
+
         ]),
+
+        html.Div([
+            html.Div(
+                dcc.Markdown(ref_str, dangerously_allow_html=True)
+            )
+        ])
 
     ],
     className="container",

@@ -1,10 +1,10 @@
-## Acknowledgement
+----
+
+#### Acknowledgement
 
 - Borrow implementation of Pix2Pix model from https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix
-   
-   
-Reference
------
+
+#### Reference
 
 - [Odena, et al., "Deconvolution and Checkerboard Artifacts", Distill, 2016. http://doi.org/10.23915/distill.00003][1]
 - [Sakurikar, Parikshit, et al. "Refocusgan: Scene refocusing using a single image." Proceedings of the European Conference on Computer Vision (ECCV). 2018.][2]
