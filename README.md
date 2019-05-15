@@ -13,7 +13,7 @@ To evaluate the model, run
 python depthfield_gan_eval.py -- label_len=1
 ```
 
-The dataset path should be changed before running. You can download the dataset from [link][https://github.com/pratulsrinivasan/Local_Light_Field_Synthesis].
+The dataset path should be changed before running. You can download the dataset from [link](https://github.com/pratulsrinivasan/Local_Light_Field_Synthesis).
 Be prepared because the dataset is very large. To generate ground truth photos for training, use scripts/refocus2.py.
 
-For more information, please visit our [website][https://adl-project.herokuapp.com/] and check out our interactive demo there!
+For more information, please visit our [website](https://adl-project.herokuapp.com/) and check out our interactive demo there!
